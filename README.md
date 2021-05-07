@@ -1,4 +1,4 @@
-<a href="https://pandio.com"><img src="assets/pandio_225_blue-05.svg" alt="Pandio Logo"></a>
+<a href="https://pandio.com"><img src="https://pandio-com.github.io/static/files/assets/pandio_225_blue-05.svg" alt="Pandio Logo"></a>
 
 # PandioCLI - Pandio.com Machine Learning CLI Tool
 

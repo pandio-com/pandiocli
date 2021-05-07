@@ -11,7 +11,7 @@ if not os.path.exists(user_config_dir('PandioCLI', 'Pandio')):
     except:
         raise Exception("Could not create folder for the project: {args.project_name}")
 
-from src import download, upload, function, register, generate, config, test, dataset
+from src import function, register, config, test, dataset
 
 welcome_text = """
                                                                  dddddddd                         
@@ -125,31 +125,11 @@ def parse_cmd_args(cmd_args):
     subparsers = parser.add_subparsers(
         title='List of sub commands', description='A description of all the available sub commmands', help='All the commands', dest='subparser_name')
 
-    # code for subparser command a
-    parser_a = subparsers.add_parser('download', help='help for downloading')
-    parser_a.add_argument('url', type=str, help='url for downloading from')
-    # a function to call when subparser invoked
-    parser_a.set_defaults(func=download.start)
-
-    # create the parser for the "b" command
-    parser_b = subparsers.add_parser('upload', help='help for uploading')
-    parser_b.add_argument('url', type=str, help='url for uploading to')
-    parser_b.add_argument(
-        'file', help='file paths. minimum of 1 but can have more', nargs='+')
-    # a function to call when subparser invoked
-    parser_b.set_defaults(func=upload.start)
-
     # code for subparser command r
     parser_r = subparsers.add_parser('register', help='register for a Pandio account')
     parser_r.add_argument('email', type=str, help='email to register from')
     # a function to call when subparser invoked
     parser_r.set_defaults(func=register.start)
-
-    # code for subparser command g
-    parser_g = subparsers.add_parser('generate', help='generate a project')
-    parser_g.add_argument('folder_name', type=str, help='folder name for the project')
-    # a function to call when subparser invoked
-    parser_g.set_defaults(func=generate.start)
 
     # code for subparser command c
     parser_c = subparsers.add_parser('config', help='Update the configuration for the pandiocli')

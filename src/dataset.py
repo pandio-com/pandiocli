@@ -6,7 +6,7 @@ from appdirs import user_config_dir
 from pulsar import ConsumerType
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-dirname = os.path.dirname(__file__)
+dirname = os.path.dirname(os.path.realpath(__file__))
 
 config = Conf()
 if os.path.exists(user_config_dir('PandioCLI', 'Pandio')+'/config.json'):
@@ -27,8 +27,9 @@ def start(args):
                         os.makedirs(f"{path}/deps")
                     sys.path.append(path)
                     project_config = __import__('config')
-                    # TODO, remove this when pandioml is available via PIP
-                    os.system(f"cp -rf {path}/../pandioml/dist/pandioml-1.0.0-py3-none-any.whl {path}/deps/pandioml-1.0.0-py3-none-any.whl")
+
+                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.0-py3-none-any.whl'),
+                             os.path.join(path, 'deps/pandioml-1.0.0-py3-none-any.whl'))
 
                     os.system(f"pip download \
                                 --only-binary :all: \
@@ -91,9 +92,8 @@ def start(args):
                         headers=headers
                     )
 
-                    # TODO, allow the files to be deleted
-                    #if os.path.exists(tmp_path + tmp_file):
-                    #    os.remove(tmp_path + tmp_file)
+                    if os.path.exists(tmp_path + tmp_file):
+                        os.remove(tmp_path + tmp_file)
 
                     if response.status_code == 204:
                         print("Function uploaded successfully!")
