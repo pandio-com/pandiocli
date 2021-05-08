@@ -27,8 +27,8 @@ def start(args):
                     sys.path.append(path)
                     project_config = __import__('config')
 
-                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.0-py3-none-any.whl'),
-                             os.path.join(path, 'deps/pandioml-1.0.0-py3-none-any.whl'))
+                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.2-py3-none-any.whl'),
+                             os.path.join(path, 'deps/pandioml-1.0.2-py3-none-any.whl'))
 
                     os.system(f"pip download \
                                 --only-binary :all: \
