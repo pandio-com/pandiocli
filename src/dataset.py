@@ -14,7 +14,6 @@ if os.path.exists(user_config_dir('PandioCLI', 'Pandio')+'/config.json'):
 
 
 def start(args):
-    print('in dataset')
     print(args)
     if args.command == 'upload':
         if 'project_folder' in args:
@@ -30,6 +29,11 @@ def start(args):
 
                     copyfile(os.path.join(dirname, 'assets/pandioml-1.0.0-py3-none-any.whl'),
                              os.path.join(path, 'deps/pandioml-1.0.0-py3-none-any.whl'))
+
+                    os.system(f"pip download \
+                                --only-binary :all: \
+                                --platform manylinux1_x86_64 \
+                                --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
 
                     os.system(f"pip download \
                                 --only-binary :all: \

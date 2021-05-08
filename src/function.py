@@ -33,6 +33,11 @@ def start(args):
                     os.system(f"pip download \
                                 --only-binary :all: \
                                 --platform manylinux1_x86_64 \
+                                --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+
+                    os.system(f"pip download \
+                                --only-binary :all: \
+                                --platform manylinux1_x86_64 \
                                 --python-version 37 -r {path}/requirements.txt -d {path}/deps")
 
                     hash = hashlib.md5(bytes(args.project_folder, 'utf-8'))
