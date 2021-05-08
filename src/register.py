@@ -27,7 +27,7 @@ def register(email):
     if response.status_code != 201:
         return None
 
-    return response.json()
+    return response.json()['token']
 
 
 def get_details(token):
