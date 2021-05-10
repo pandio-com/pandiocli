@@ -46,6 +46,7 @@ def start(args):
                         os.makedirs(tmp_path)
                     tmp_file = args.project_folder.split('/')[-1:][0] + '.zip'
                     zipf = zipfile.ZipFile(tmp_path + tmp_file, 'w', zipfile.ZIP_DEFLATED)
+                    zipf.write(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets/wrapper.py'), 'wrapper.py')
                     zipdir(path, zipf, args.project_folder)
                     zipf.close()
                     print(f"File located at {tmp_path}{tmp_file}")
@@ -124,15 +125,13 @@ def start(args):
             except:
                 raise Exception("Could not create folder for the project: {args.project_name}")
 
-        copyfile(os.path.join(dirname, 'assets/runner_template.py'), f"{args.project_name}/runner.py")
-        copyfile(os.path.join(dirname, 'assets/fnc_template.py'), f"{args.project_name}/fnc.py")
-        copyfile(os.path.join(dirname, 'assets/wrapper_template.py'), f"{args.project_name}/wrapper.py")
+        copyfile(os.path.join(dirname, 'assets/function_template.py'), f"{args.project_name}/function.py")
         copyfile(os.path.join(dirname, 'assets/config_template.py'), f"{args.project_name}/config.py")
         copyfile(os.path.join(dirname, 'assets/requirements_template.txt'), f"{args.project_name}/requirements.txt")
 
         print(f"New function project created in: `{args.project_name}`")
         print("")
-        print(f"Open {args.project_name}/fnc.py to begin defining your model.")
+        print(f"Open {args.project_name}/function.py to begin defining your model.")
         print("")
         print(f"For help creating your function, see existing examples or read the documentation in the README.")
         print("")

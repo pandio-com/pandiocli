@@ -17,26 +17,14 @@ This repository contains the PandioCLI tool to develop and deploy machine learni
 #### `pandiocli function generate --project_name example`
 
 Generates a project template in the current working directory at `./example`
-
-1. `./example/runner.py`
-
-      This is a helper function that allows you to use Python locally to test the function end to end.
       
-      *Note: You should not need to ever modify this file.*
-      
-1. `./example/fnc.py`
+1. `./example/function.py`
 
       This is the file where all of your logic should be placed.
 
-1. `./example/wrapper.py`
-
-      This function is called by the `runner.py`, which then subsequently imports your custom code. This is the file that gets deployed to Pandio's platform. Ideally this file does not get modified.
-      
-      *Note: You should not need to ever modify this file.*
-
 1. `./example/requirements.txt`
 
-      This file should contain all the necessary Python packages to power `fnc.py`. The contents of this will automatically be installed for you when deploying to Pandio's platform. When running locally, make sure to install as you normally would `pip install -r requirements.txt`
+      This file should contain all the necessary Python packages to power `function.py`. The contents of this will automatically be installed for you when deploying to Pandio's platform. When running locally, make sure to install as you normally would `pip install -r requirements.txt`
 
 1. `./example/config.py`
 

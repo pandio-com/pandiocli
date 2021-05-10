@@ -46,6 +46,8 @@ def start(args):
                         os.makedirs(tmp_path)
                     tmp_file = args.project_folder.split('/')[-1:][0] + '.zip'
                     zipf = zipfile.ZipFile(tmp_path + tmp_file, 'w', zipfile.ZIP_DEFLATED)
+                    zipf.write(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets/dataset/wrapper.py'),
+                               'wrapper.py')
                     zipdir(path, zipf, args.project_folder)
                     zipf.close()
                     print(f"File located at {tmp_path}{tmp_file}")
@@ -150,7 +152,7 @@ def start(args):
         else:
             copyfile(os.path.join(dirname, 'assets/dataset/stream_template.py'), f"{args.project_name}/dataset.py")
         copyfile(os.path.join(dirname, 'assets/dataset/config_template.py'), f"{args.project_name}/config.py")
-        copyfile(os.path.join(dirname, 'assets/dataset/wrapper_template.py'), f"{args.project_name}/wrapper.py")
+        #copyfile(os.path.join(dirname, 'assets/dataset/wrapper_template.py'), f"{args.project_name}/wrapper.py")
         copyfile(os.path.join(dirname, 'assets/requirements_template.txt'), f"{args.project_name}/requirements.txt")
 
         print(f"New dataset project created in: `{args.project_name}`")

@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from pandioml.function import Function
 from pandioml.core import Pipelines
-import fnc as pm
+import function as pm
 import config
 from pandioml.core.artifacts import artifact
 import time
@@ -33,7 +33,7 @@ class Wrapper(Function):
                 raise Exception(f"Could not find the dataset specified at ({dataset_name}): {e}")
 
     def process(self, input, context):
-        self.fnc = pm.Fnc(self.input_schema.decode(input), context, config)
+        self.fnc = pm.Function(self.input_schema.decode(input), context, config)
         try:
             self.fnc.startup()
         except Exception as e:

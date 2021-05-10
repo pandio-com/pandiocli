@@ -11,7 +11,7 @@ class Output(Record):
     prediction = Boolean()
 
 
-class Fnc(FunctionBase):
+class Function(FunctionBase):
     model = artifact.add('LogisticRegression_model', LogisticRegression())
     metric = Accuracy()  #Optional
     scaler = StandardScaler()  #Optional

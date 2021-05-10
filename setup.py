@@ -6,7 +6,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="pandiocli",
-    version="1.0.5",
+    version="1.0.6",
     author="Joshua Odmark",
     author_email="josh@pandio.com",
     description="CLI to control Pandio's machine learning service.",

@@ -5,7 +5,6 @@ import signal
 import argparse
 import tracemalloc
 import wrapper as wr
-import fnc as pm
 import os, sys
 
 shutdown = False

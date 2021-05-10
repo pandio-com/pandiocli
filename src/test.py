@@ -28,7 +28,7 @@ def start(args):
     if args.workers is not None:
         workers = int(args.workers)
 
-    if not os.path.isfile(f"{args.project_folder}/fnc.py"):
+    if not os.path.isfile(f"{args.project_folder}/function.py"):
         print(f"{args.project_folder} is invalid.")
         exit()
 
@@ -46,7 +46,7 @@ def start(args):
         print("Generating artifact identifiers.")
 
         os.system(
-            f"cd {args.project_folder} && rm -rf dist && rm -rf build && rm -rf fnc.spec && rm -rf __pycache__ && "
+            f"cd {args.project_folder} && rm -rf dist && rm -rf build && rm -rf function.spec && rm -rf __pycache__ && "
             f"PYTHONHASHSEED=1 && export "
             "PYTHONHASHSEED && pyinstaller -F --exclude-module scikit-learn "
             "--exclude-module river --exclude-module pandioml --exclude-module scikit-multiflow --exclude-module "
@@ -58,18 +58,18 @@ def start(args):
             "requests --exclude-module pymmh3 --exclude-module setuptools --exclude-module pyparsing --exclude-module"
             " pillow --exclude-module cycler --exclude-module kiwisolver --exclude-module idna --exclude-module "
             "chardet --exclude-module urllib3 --exclude-module threadpoolctl --exclude-module sklearn "
-            "--exclude-module pytest --exclude-module pickle fnc.py >/dev/null 2>&1 && unset PYTHONHASHSEED")
+            "--exclude-module pytest --exclude-module pickle function.py >/dev/null 2>&1 && unset PYTHONHASHSEED")
 
         md5 = hashlib.md5()
 
-        with open(f"{args.project_folder}/dist/fnc", 'rb') as f:
+        with open(f"{args.project_folder}/dist/function", 'rb') as f:
             while True:
                 data = f.read(BUF_SIZE)
                 if not data:
                     break
                 md5.update(data)
 
-        os.system(f"cd {args.project_folder} && rm -rf dist && rm -rf build && rm -rf fnc.spec && rm -rf __pycache__")
+        os.system(f"cd {args.project_folder} && rm -rf dist && rm -rf build && rm -rf function.spec && rm -rf __pycache__")
 
         if len(name_id) > 0:
             artifact.set_name_id(name_id)
@@ -82,16 +82,8 @@ def start(args):
     else:
         print("NOT SAVING any artifacts!")
 
-    # programs = [f"python {args.project_folder}/runner.py --dataset_name {args.dataset_name} --loops {loops}"]
-
-    # start all programs
-    #processes = [subprocess.Popen(program) for program in programs]
-    # wait
-    #for process in processes:
-    #    process.wait()
-
     body = ''
-    with open(f"{args.project_folder}/fnc.py", 'r') as f:
+    with open(f"{args.project_folder}/function.py", 'r') as f:
         while True:
             data = f.read(BUF_SIZE)
             if not data:
@@ -117,6 +109,7 @@ def start(args):
 
     print("Starting execution of pipeline(s).")
 
+    sys.path.insert(1, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets'))
     sys.path.insert(1, os.path.join(os.getcwd(), args.project_folder))
     pm = __import__('runner')
     pm.run(args.dataset_name, loops)
