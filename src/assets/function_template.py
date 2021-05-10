@@ -5,6 +5,7 @@ from pandioml.model import LogisticRegression
 from pandioml.model import StandardScaler
 from pandioml.data.record import Record, Null, Boolean, Integer, Long, Float, Double, Bytes, String, Array, Map
 from pandioml.metrics import Accuracy
+from pandioml.model import ModelUtility
 
 
 class Output(Record):
@@ -12,7 +13,8 @@ class Output(Record):
 
 
 class Function(FunctionBase):
-    model = artifact.add('LogisticRegression_model', LogisticRegression())
+    model = artifact.add('LogisticRegression_model',
+                         ModelUtility::load_or_instantiate('LogisticRegression_model.pickle', LogisticRegression))
     metric = Accuracy()  #Optional
     scaler = StandardScaler()  #Optional
 
