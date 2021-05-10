@@ -47,6 +47,9 @@ class Wrapper(Function):
         if isinstance(p, Pipelines) is False:
             raise Exception(f"Method pipelines should return a Pipelines object!")
 
+        # Set the first pipeline, multiple are not currently supported
+        context.set_user_config_value('pipeline', p.get_keys()[0])
+
         output = p.go(context.get_user_config_value('pipeline'), self.fnc)
         if isinstance(output[context.get_user_config_value('pipeline')], tuple) and isinstance(output[context.get_user_config_value('pipeline')][0], Exception):
             raise Exception(f"An exception occurred in the pipeline: {output[context.get_user_config_value('pipeline')][0]} {output[context.get_user_config_value('pipeline')][1]}")

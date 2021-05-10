@@ -1,6 +1,5 @@
 from pandioml.function import Context
 from pandioml.core.artifacts import artifact
-import matplotlib.pyplot as plt
 import signal
 import argparse
 import tracemalloc
@@ -24,14 +23,11 @@ def run(dataset_name, loops):
         raise Exception(f"Could not find the dataset specified at ({dataset_name}): {e}")
 
     w = wr.Wrapper(dataset_name=dataset_name)
-    correctness_dist = []
 
     index = 0
     while True:
         start = time.time()
         c = Context()
-        # TODO, simulate a user setting, remove it
-        c.set_user_config_value('pipeline', 'inference')
 
         if shutdown or (index >= loops and loops != -1):
             break
@@ -53,15 +49,6 @@ def run(dataset_name, loops):
 
             print(f"Actual: {int(w.result['labels'])}")
             print(f"Prediction: {int(w.result['prediction'])}")
-
-            if int(w.result['labels']) == \
-                    int(w.result['prediction']):
-                correctness_dist.append(1)
-                print('CORRECT')
-            else:
-                correctness_dist.append(0)
-                print('WRONG')
-
             print("")
 
         end = time.time()
@@ -70,19 +57,6 @@ def run(dataset_name, loops):
         w.output = None
 
         index = artifact.add('dataset_index', (index + 1))
-
-    if len(correctness_dist) > 0:
-        fig = plt.figure()
-        time = [i for i in range(1, index)]
-        accuracy = [sum(correctness_dist[:i])/len(correctness_dist[:i]) for i in range(1, index)]
-        plt.plot(time, accuracy)
-
-        def save_image(storage_location):
-            fig.savefig(f"{storage_location}/accuracy_graph.png")
-
-        artifact.add('accuracy_graph', save_image)
-    else:
-        print("No results were stored for comparisons.")
 
     w.fnc.shutdown()
 

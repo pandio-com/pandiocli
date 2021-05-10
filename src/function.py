@@ -27,6 +27,11 @@ def start(args):
                     sys.path.append(path)
                     project_config = __import__('config')
 
+                    # Only one pipeline is supported for now
+                    fnc = __import__('function')
+                    pipeline_key = fnc.Function().pipelines().get_keys()[0]
+
+
                     copyfile(os.path.join(dirname, 'assets/pandioml-1.0.2-py3-none-any.whl'),
                              os.path.join(path, 'deps/pandioml-1.0.2-py3-none-any.whl'))
 
@@ -51,11 +56,10 @@ def start(args):
                     zipf.close()
                     print(f"File located at {tmp_path}{tmp_file}")
 
-                    # TODO, remove userConfig pipeline value
                     arr = {
                         "name": project_config.pandio['FUNCTION_NAME'],
                         "userConfig": {
-                            "pipeline": "inference"
+                            "pipeline": pipeline_key
                         },
                         "inputs": project_config.pandio['INPUT_TOPICS'],
                         "parallelism": 1,
