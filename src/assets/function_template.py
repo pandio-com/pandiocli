@@ -14,7 +14,7 @@ class Output(Record):
 
 class Function(FunctionBase):
     model = artifact.add('LogisticRegression_model',
-                         ModelUtility::load_or_instantiate('LogisticRegression_model.pickle', LogisticRegression))
+                         ModelUtility.load_or_instantiate('LogisticRegression_model.pickle', LogisticRegression))
     metric = Accuracy()  #Optional
     scaler = StandardScaler()  #Optional
 
