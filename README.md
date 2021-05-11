@@ -149,6 +149,8 @@ This is a helper method to running the `folder_name/runner.py` file manually wit
 
 **loops** is the number of events to process. Most streams of data are infinite, so this allows iterative testing with limited data.
 
+**pipeline_name** is the number of events to process. Most streams of data are infinite, so this allows iterative testing with limited data.
+
 #### `pandiocli register your@email.com`
 
 This command registers a Pandio.com account for you. An email with a link to verify your registration will be sent.

@@ -24,9 +24,9 @@ def start(args):
     if args.loops is not None:
         loops = int(args.loops)
 
-    workers = 1
-    if args.workers is not None:
-        workers = int(args.workers)
+    pipeline_name = None
+    if args.pipeline_name is not None:
+        pipeline_name = args.pipeline_name
 
     if not os.path.isfile(f"{args.project_folder}/function.py"):
         print(f"{args.project_folder} is invalid.")
@@ -112,7 +112,7 @@ def start(args):
     sys.path.insert(1, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets'))
     sys.path.insert(1, os.path.join(os.getcwd(), args.project_folder))
     pm = __import__('runner')
-    pm.run(args.dataset_name, loops)
+    pm.run(args.dataset_name, loops, pipeline_name=pipeline_name)
 
     print("")
 

@@ -10,7 +10,7 @@ shutdown = False
 tracemalloc.start(10)
 
 
-def run(dataset_name, loops):
+def run(dataset_name, loops, pipeline_name=None):
     import time
     try:
         if os.path.exists(dataset_name+'/dataset.py'):
@@ -22,7 +22,7 @@ def run(dataset_name, loops):
     except Exception as e:
         raise Exception(f"Could not find the dataset specified at ({dataset_name}): {e}")
 
-    w = wr.Wrapper(dataset_name=dataset_name)
+    w = wr.Wrapper(dataset_name=dataset_name, pipeline_name=pipeline_name)
 
     index = 0
     while True:

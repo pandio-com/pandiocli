@@ -16,8 +16,10 @@ class Wrapper(Function):
     fnc = None
     result = None
     input_schema = None
+    pipeline_name = None
 
-    def __init__(self, dataset_name=None):
+    def __init__(self, dataset_name=None, pipeline_name=None):
+        self.pipeline_name = pipeline_name
         artifact.add('runtime_settings', {'config.pandio': config.pandio, 'sys.version': sys.version,
                                           'timestamp': time.strftime("%Y%m%d-%H%M%S")})
         if dataset_name is not None:
@@ -47,8 +49,10 @@ class Wrapper(Function):
         if isinstance(p, Pipelines) is False:
             raise Exception(f"Method pipelines should return a Pipelines object!")
 
-        # Set the first pipeline, multiple are not currently supported
-        context.set_user_config_value('pipeline', p.get_keys()[0])
+        if self.pipeline_name is None:
+            context.set_user_config_value('pipeline', p.get_keys()[0])
+        else:
+            context.set_user_config_value('pipeline', self.pipeline_name)
 
         output = p.go(context.get_user_config_value('pipeline'), self.fnc)
         if isinstance(output[context.get_user_config_value('pipeline')], tuple) and isinstance(output[context.get_user_config_value('pipeline')][0], Exception):

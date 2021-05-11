@@ -145,8 +145,8 @@ def parse_cmd_args(cmd_args):
     parser_t.add_argument('--dataset_name', type=str, help='The name of the data set inside of pandioml.data')
     parser_t.add_argument('--loops', type=str, help='The number of events to process before finishing the test.',
                           required=False)
-    parser_t.add_argument('--workers', type=str, help='The number of script iterations to create. This adds parallelism'
-                                                      ' to the execution of the function.', required=False)
+    parser_t.add_argument('--pipeline_name', type=str, help='The specific pipeline to run from the pipelines array.',
+                          required=False)
     # a function to call when subparser invoked
     parser_t.set_defaults(func=test.start)
 
