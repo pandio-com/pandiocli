@@ -19,7 +19,7 @@ def save_config():
 def register(email):
     fake = faker.Faker('en_US')
     response = requests.post(
-        "https://app.staging.pandio.com/api/v1/starter/create-user",
+        "https://app.pandio.com/api/v1/starter/create-user",
         json={'email': email, 'first_name': getattr(fake, 'first_name_nonbinary')(),
               'last_name': getattr(fake, 'last_name_nonbinary')()}
     )
@@ -32,7 +32,7 @@ def register(email):
 
 def get_details(token):
     response = requests.get(
-        "https://app.staging.pandio.com/api/v1/starter/tenant-details",
+        "https://app.pandio.com/api/v1/starter/tenant-details",
         headers={'Authorization': f"Bearer {token}", 'Accept': 'application/json'}
     )
 
@@ -62,12 +62,12 @@ def start(args):
         config.set_value('PANDIO_REGISTER_TOKEN', token)
 
         save_config()
+
+        input("Please verify your email and then return to this prompt and hit enter:")
+
+        print("")
     else:
         token = existing_token
-
-    input("Please verify your email and then return to this prompt and hit enter:")
-
-    print("")
 
     print("Retrieving your account details.")
 

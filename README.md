@@ -120,6 +120,10 @@ This will output the current configuration for the PandioCLI
 
 This will output the current configuration file location for the PandioCLI
 
+#### `pandiocli config reset`
+
+This will delete all settings for the PandioCLI
+
 #### `pandiocli config set --key PANDIO_TOKEN --value ABC123`
 
 This command allows you to manually set the configuration parameters for PandioCLI

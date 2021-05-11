@@ -64,6 +64,11 @@ def start(args):
         print("PANDIO SETTINGS FILE LOCATION")
         print("")
         print(user_config_dir('PandioCLI', 'Pandio') + '/config.json')
+    elif args.command == 'reset':
+        print("RESET PANDIO SETTINGS")
+        print("")
+        os.remove(user_config_dir('PandioCLI', 'Pandio') + '/config.json')
+        print('Deleted file: ' + user_config_dir('PandioCLI', 'Pandio') + '/config.json')
     else:
         print(f"Action ({args.action}) not found.")
 
