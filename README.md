@@ -10,7 +10,7 @@ This repository contains the PandioCLI tool to develop and deploy machine learni
 
 ### Installation
 
-`pip install pandiocli pandioml`
+`pip install pandiocli`
 
 ## Requirements
 
