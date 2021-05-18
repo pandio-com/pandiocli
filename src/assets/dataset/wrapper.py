@@ -13,6 +13,9 @@ class Wrapper(Function):
         pass
 
     def process(self, input, context):
+        pass
+
+    def run(self, context):
         if 'OUTPUT_TOPICS' in config.pandio:
             d = _dataset.Dataset()
             while True:
@@ -23,3 +26,5 @@ class Wrapper(Function):
                     break
         else:
             print('No output topics defined.')
+
+        return None

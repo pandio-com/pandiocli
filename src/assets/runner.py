@@ -5,6 +5,12 @@ import argparse
 import tracemalloc
 import wrapper as wr
 import os, sys
+from goodconf import GoodConf
+from appdirs import user_config_dir
+
+config = GoodConf()
+if os.path.exists(user_config_dir('PandioCLI', 'Pandio')+'/config.json'):
+    config.load(user_config_dir('PandioCLI', 'Pandio')+'/config.json')
 
 shutdown = False
 tracemalloc.start(10)
@@ -18,7 +24,11 @@ def run(dataset_name, loops, pipeline_name=None):
             _dataset = __import__('dataset')
             generator = _dataset.Dataset()
         else:
-            generator = getattr(__import__('pandioml.data', fromlist=[dataset_name]), dataset_name)()
+            _dataset = getattr(__import__('pandioml.data', fromlist=[dataset_name]), dataset_name)
+            if 'pandio_token' in _dataset.__init__.__code__.co_varnames:
+                generator = _dataset(pandio_token=getattr(config, 'PANDIO_DATA_TOKEN'))
+            else:
+                generator = _dataset()
     except Exception as e:
         raise Exception(f"Could not find the dataset specified at ({dataset_name}): {e}")
 
@@ -34,22 +44,7 @@ def run(dataset_name, loops, pipeline_name=None):
 
         event = generator.next()
 
-        print('event')
-        print(event)
-
-        result = w.process(generator.schema().encode(event).decode('UTF-8'), c)
-
-        print('result')
-        print(result)
-
-        print('result')
-        print(w.result)
-
-        if w.result is not None:
-
-            print(f"Actual: {int(w.result['labels'])}")
-            print(f"Prediction: {int(w.result['prediction'])}")
-            print("")
+        w.process(generator.schema().encode(event).decode('UTF-8'), c)
 
         end = time.time()
         print(f"Runtime ({index}) of the program is {round(end - start, 3)}")

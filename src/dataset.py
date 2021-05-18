@@ -1,9 +1,10 @@
 import logging, os, zipfile, hashlib, sys, pulsar, datetime
 from .config import Conf
 import json
-from shutil import copyfile
+from shutil import copyfile, rmtree
 from appdirs import user_config_dir
 from pulsar import ConsumerType
+from pulsar import InitialPosition
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 dirname = os.path.dirname(os.path.realpath(__file__))
@@ -22,23 +23,34 @@ def start(args):
             path = root_path + '/' + args.project_folder
             if os.path.isdir(path):
                 if os.path.exists(f"{path}/config.py"):
-                    if not os.path.exists(f"{path}/deps"):
-                        os.makedirs(f"{path}/deps")
+                    # Delete existing dependencies
+                    if os.path.exists(f"{path}/deps"):
+                        rmtree(f"{path}/deps")
+                    os.makedirs(f"{path}/deps")
                     sys.path.append(path)
                     project_config = __import__('config')
 
-                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.2-py3-none-any.whl'),
-                             os.path.join(path, 'deps/pandioml-1.0.2-py3-none-any.whl'))
+                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.5-py3-none-any.whl'),
+                             os.path.join(path, 'deps/pandioml-1.0.5-py3-none-any.whl'))
 
-                    os.system(f"pip download \
-                                --only-binary :all: \
-                                --platform manylinux1_x86_64 \
-                                --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+                    if 'ADMIN_API' in project_config.pandio and 'localhost' in project_config.pandio['ADMIN_API']:
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
 
-                    os.system(f"pip download \
-                                --only-binary :all: \
-                                --platform manylinux1_x86_64 \
-                                --python-version 37 -r {path}/requirements.txt -d {path}/deps")
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    -r {path}/requirements.txt -d {path}/deps")
+                    else:
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    --platform manylinux1_x86_64 \
+                                    --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    --platform manylinux1_x86_64 \
+                                    --python-version 37 -r {path}/requirements.txt -d {path}/deps")
 
                     hash = hashlib.md5(bytes(args.project_folder, 'utf-8'))
                     tmp_path = tmp_path + hash.hexdigest() + '/'
@@ -59,8 +71,13 @@ def start(args):
                         "log-topic": project_config.pandio['LOG_TOPIC'],
                         "className": 'wrapper.Wrapper',
                         "py": tmp_file,
-                        #"consumerType": ConsumerType.Shared,
-                        "runtime": "PYTHON"
+                        "runtime": "PYTHON",
+                        "inputSpecs": {
+                            "persistent://public/default/in": {
+                                "initialPosition": InitialPosition.Earliest,
+                                "receiverQueueSize": 10
+                            }
+                        }
                     }
 
                     mp_encoder = MultipartEncoder(
@@ -103,21 +120,6 @@ def start(args):
 
                     if response.status_code == 204:
                         print("Function uploaded successfully!")
-
-                        if 'CONNECTION_STRING' in project_config.pandio:
-                            print('Sending dataset trigger message.')
-
-                            # Send a message to trigger the function
-                            client = pulsar.Client(project_config.pandio['CONNECTION_STRING'])
-
-                            producer = client.create_producer(project_config.pandio['INPUT_TOPICS'][0])
-
-                            producer.send(('Hello!').encode('utf-8'), deliver_after=datetime.timedelta(minutes=10))
-
-                            client.close()
-                        else:
-                            print('Warning! CONNECTION_STRING missing from config.py, cannot start the dataset function.')
-
                     else:
                         raise Exception(f"The function could not be uploaded: {response.text}")
                 else:

@@ -12,6 +12,11 @@ This repository contains the PandioCLI tool to develop and deploy machine learni
 
 `pip install pandiocli pandioml`
 
+## Requirements
+
+Python 3.5 - 3.8
+PIP > 20.0.0
+
 ### Commands
 
 #### `pandiocli function generate --project_name example`

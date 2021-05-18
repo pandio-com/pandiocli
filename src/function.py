@@ -2,7 +2,6 @@ import logging, os, zipfile, hashlib, sys
 from .config import Conf
 import json
 from shutil import copyfile
-from pulsar import ConsumerType
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from appdirs import user_config_dir
@@ -31,19 +30,27 @@ def start(args):
                     fnc = __import__('function')
                     pipeline_key = fnc.Function().pipelines().get_keys()[0]
 
+                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.5-py3-none-any.whl'),
+                             os.path.join(path, 'deps/pandioml-1.0.5-py3-none-any.whl'))
 
-                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.2-py3-none-any.whl'),
-                             os.path.join(path, 'deps/pandioml-1.0.2-py3-none-any.whl'))
+                    if 'ADMIN_API' in project_config.pandio and 'localhost' in project_config.pandio['ADMIN_API']:
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
 
-                    os.system(f"pip download \
-                                --only-binary :all: \
-                                --platform manylinux1_x86_64 \
-                                --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    -r {path}/requirements.txt -d {path}/deps")
+                    else:
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    --platform manylinux1_x86_64 \
+                                    --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
 
-                    os.system(f"pip download \
-                                --only-binary :all: \
-                                --platform manylinux1_x86_64 \
-                                --python-version 37 -r {path}/requirements.txt -d {path}/deps")
+                        os.system(f"pip download \
+                                    --only-binary :all: \
+                                    --platform manylinux1_x86_64 \
+                                    --python-version 37 -r {path}/requirements.txt -d {path}/deps")
 
                     hash = hashlib.md5(bytes(args.project_folder, 'utf-8'))
                     tmp_path = tmp_path + hash.hexdigest() + '/'
@@ -66,7 +73,6 @@ def start(args):
                         "log-topic": project_config.pandio['LOG_TOPIC'],
                         "className": 'wrapper.Wrapper',
                         "py": tmp_file,
-                        #"consumerType": ConsumerType.Shared,
                         "runtime": "PYTHON"
                     }
 
