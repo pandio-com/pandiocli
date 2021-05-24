@@ -1,5 +1,5 @@
 import logging, pathlib, os
-from .config import Conf
+from .configuration import Conf
 import requests
 import faker
 import time

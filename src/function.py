@@ -1,5 +1,5 @@
 import logging, os, zipfile, hashlib, sys
-from .config import Conf
+from .configuration import Conf
 import json
 from shutil import copyfile
 import requests

@@ -71,14 +71,18 @@ if __name__ == "__main__":
                         required=False)
     parser.add_argument('--pipeline_name', type=str, help='The specific pipeline to run from the pipelines array.',
                         required=False)
+    parser.add_argument('--pipeline_id', type=str, help='The pipeline id to store the artifacts for the run.',
+                        required=False)
 
     args = parser.parse_args()
     loops = -1
-    if 'loops' in args:
+    if 'loops' in args and args.loops != 'None':
         loops = int(args.loops)
     pipeline_name = None
-    if 'pipeline_name' in args:
+    if 'pipeline_name' in args and args.pipeline_name != 'None':
         pipeline_name = args.pipeline_name
+    if 'pipeline_id' in args and args.pipeline_id != 'None':
+        artifact.set_pipeline_id(args.pipeline_id)
 
     run(args.dataset_name, loops, pipeline_name=pipeline_name)
 

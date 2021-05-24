@@ -1,6 +1,6 @@
 import os
 import sys
-from .config import Conf
+from .configuration import Conf
 import hashlib
 from pandioml.core.artifacts import artifact
 import zipfile
@@ -28,6 +28,11 @@ def start(args):
     if not os.path.isfile(f"{args.project_folder}/function.py"):
         print(f"{args.project_folder} is invalid.")
         exit()
+
+    path = os.path.join(os.getcwd(), args.project_folder)
+    sys.path.append(path)
+    project_config = __import__('config')
+    artifact.set_storage_location(project_config.pandio['ARTIFACT_STORAGE'])
 
     val = input("Would you like to store artifacts (dataset, pipeline, model, etc.)? If no, only the model will be saved. (y,n): ")
     store = True if val.lower() == 'y' or val.lower() == 'yes' else False
@@ -106,13 +111,6 @@ def start(args):
 
     print("Starting execution of pipeline(s).")
 
-    # sys.path.insert(1, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets'))
-    # sys.path.insert(1, os.path.join(os.getcwd(), args.project_folder))
-    # pm = __import__('runner')
-    # pm.run(args.dataset_name, loops, pipeline_name=pipeline_name)
-    #
-    # exit()
-
     client = docker.from_env()
     path = os.path.join(os.getcwd(), args.project_folder)
     if os.path.exists(os.path.join(os.getcwd(), args.dataset_name, 'dataset.py')):
@@ -132,20 +130,22 @@ def start(args):
         dataset_name = '/dataset'
         volumes[dpath] = {'bind': dataset_name, 'mode': 'rw'}
 
-    client.containers.run('pandioml/test', name='pandiocli', volumes=volumes,
+    client.containers.run('pandio/pandioml', name='pandiocli', volumes=volumes,
                           detach=True)
 
     api = docker.APIClient()
     c = api.exec_create('pandiocli', f"python /code/runner.py --dataset_name {dataset_name} --loops {loops} "
-                                     f"--pipeline_name {pipeline_name}", tty=True)
+                                     f"--pipeline_name {pipeline_name} --pipeline_id {artifact.get_pipeline_id()}", tty=True)
     s = api.exec_start(c, stream=True)
     for line in s:
-        print(line)
+        print(line.decode('UTF-8'))
 
     os.remove(os.path.join(path, 'runner.py'))
     os.remove(os.path.join(path, 'wrapper.py'))
 
     c = client.containers.get('pandiocli')
     c.remove(force=True)
+
+    artifact.save()
 
     print("")

@@ -11,7 +11,7 @@ if not os.path.exists(user_config_dir('PandioCLI', 'Pandio')):
     except:
         raise Exception("Could not create folder for the project: {args.project_name}")
 
-from src import function, register, config, test, dataset
+from src import function, register, configuration, test, dataset
 
 welcome_text = """
                                                                  dddddddd                         
@@ -137,7 +137,7 @@ def parse_cmd_args(cmd_args):
     parser_c.add_argument('--key', type=str, help='The key to set', required=False)
     parser_c.add_argument('--value', type=str, help='The value to set to the key', required=False)
     # a function to call when subparser invoked
-    parser_c.set_defaults(func=config.start)
+    parser_c.set_defaults(func=configuration.start)
 
     # code for subparser command t
     parser_t = subparsers.add_parser('test', help='Test your PandioML project')

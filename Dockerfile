@@ -133,9 +133,11 @@ RUN set -ex; \
 
 ADD ./apache-pulsar-client.deb /apache-pulsar-client.deb
 
-RUN apt install ./apache-pulsar-client*.deb
+#RUN pip install pandioml
 
-RUN pip install pandioml==1.0.5
+RUN pip install git+https://github.com/pandio-com/pandioml.git@main && ls -a && ls -a
+
+RUN pip install git+https://github.com/pandio-com/pandiocli.git@main
 
 RUN pip install pulsar-client==2.7.2
 

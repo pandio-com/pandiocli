@@ -1,5 +1,5 @@
 import logging, os, zipfile, hashlib, sys
-from .config import Conf
+from .configuration import Conf
 import json
 from shutil import copyfile, rmtree
 from appdirs import user_config_dir
@@ -16,9 +16,8 @@ def start(args):
     print(args)
     if args.command == 'upload':
         if 'project_folder' in args:
-            root_path = os.getcwd()
             tmp_path = '/tmp/'
-            path = root_path + '/' + args.project_folder
+            path = os.path.join(os.getcwd(), args.project_folder)
             if os.path.isdir(path):
                 if os.path.exists(f"{path}/config.py"):
                     # Delete existing dependencies
