@@ -69,13 +69,18 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_name', type=str, help='The name of the data set inside of pandioml.data')
     parser.add_argument('--loops', type=str, help='The number of events to process before finishing the test.',
                         required=False)
+    parser.add_argument('--pipeline_name', type=str, help='The specific pipeline to run from the pipelines array.',
+                        required=False)
 
     args = parser.parse_args()
     loops = -1
     if 'loops' in args:
         loops = int(args.loops)
+    pipeline_name = None
+    if 'pipeline_name' in args:
+        pipeline_name = args.pipeline_name
 
-    run(args.dataset_name, loops)
+    run(args.dataset_name, loops, pipeline_name=pipeline_name)
 
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics('lineno')[:10]

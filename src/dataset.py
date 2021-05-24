@@ -1,10 +1,8 @@
-import logging, os, zipfile, hashlib, sys, pulsar, datetime
+import logging, os, zipfile, hashlib, sys
 from .config import Conf
 import json
 from shutil import copyfile, rmtree
 from appdirs import user_config_dir
-from pulsar import ConsumerType
-from pulsar import InitialPosition
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 dirname = os.path.dirname(os.path.realpath(__file__))
@@ -72,12 +70,7 @@ def start(args):
                         "className": 'wrapper.Wrapper',
                         "py": tmp_file,
                         "runtime": "PYTHON",
-                        "inputSpecs": {
-                            "persistent://public/default/in": {
-                                "initialPosition": InitialPosition.Earliest,
-                                "receiverQueueSize": 10
-                            }
-                        }
+                        "inputSpecs": {}
                     }
 
                     mp_encoder = MultipartEncoder(

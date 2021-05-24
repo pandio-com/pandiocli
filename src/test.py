@@ -1,20 +1,17 @@
-import pathlib
 import os
-import os.path
-import signal
-import subprocess
 import sys
 from .config import Conf
 import hashlib
 from pandioml.core.artifacts import artifact
 import zipfile
 from appdirs import user_config_dir
+import docker
+from shutil import copyfile
+dirname = os.path.dirname(os.path.realpath(__file__))
 
 config = Conf()
 if os.path.exists(user_config_dir('PandioCLI', 'Pandio')+'/config.json'):
     config.load(user_config_dir('PandioCLI', 'Pandio')+'/config.json')
-
-shutdown = False
 
 
 def start(args):
@@ -109,18 +106,46 @@ def start(args):
 
     print("Starting execution of pipeline(s).")
 
-    sys.path.insert(1, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets'))
-    sys.path.insert(1, os.path.join(os.getcwd(), args.project_folder))
-    pm = __import__('runner')
-    pm.run(args.dataset_name, loops, pipeline_name=pipeline_name)
+    # sys.path.insert(1, os.path.join(os.path.abspath(os.path.dirname(__file__)), 'assets'))
+    # sys.path.insert(1, os.path.join(os.getcwd(), args.project_folder))
+    # pm = __import__('runner')
+    # pm.run(args.dataset_name, loops, pipeline_name=pipeline_name)
+    #
+    # exit()
+
+    client = docker.from_env()
+    path = os.path.join(os.getcwd(), args.project_folder)
+    if os.path.exists(os.path.join(os.getcwd(), args.dataset_name, 'dataset.py')):
+        dpath = os.path.join(os.getcwd(), args.dataset_name)
+    else:
+        dpath = None
+
+    copyfile(os.path.join(dirname, 'assets/runner.py'),
+             os.path.join(path, 'runner.py'))
+    copyfile(os.path.join(dirname, 'assets/wrapper.py'),
+             os.path.join(path, 'wrapper.py'))
+
+    dataset_name = args.dataset_name
+
+    volumes = {path: {'bind': '/code', 'mode': 'rw'}}
+    if dpath is not None:
+        dataset_name = '/dataset'
+        volumes[dpath] = {'bind': dataset_name, 'mode': 'rw'}
+
+    client.containers.run('pandioml/test', name='pandiocli', volumes=volumes,
+                          detach=True)
+
+    api = docker.APIClient()
+    c = api.exec_create('pandiocli', f"python /code/runner.py --dataset_name {dataset_name} --loops {loops} "
+                                     f"--pipeline_name {pipeline_name}", tty=True)
+    s = api.exec_start(c, stream=True)
+    for line in s:
+        print(line)
+
+    os.remove(os.path.join(path, 'runner.py'))
+    os.remove(os.path.join(path, 'wrapper.py'))
+
+    c = client.containers.get('pandiocli')
+    c.remove(force=True)
 
     print("")
-
-
-def shutdown_callback(signalNumber, frame):
-    global shutdown
-    shutdown = True
-
-
-signal.signal(signal.SIGINT, shutdown_callback)
-signal.signal(signal.SIGTERM, shutdown_callback)

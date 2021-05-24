@@ -8,6 +8,8 @@ import config
 from pandioml.core.artifacts import artifact
 import time
 from pandioml.data.record import JsonSchema
+# TODO, comment back
+#from pandioml.core.storage import storage
 
 artifact.set_storage_location(config.pandio['ARTIFACT_STORAGE'])
 
@@ -54,6 +56,8 @@ class Wrapper(Function):
         else:
             context.set_user_config_value('pipeline', self.pipeline_name)
 
+        print(self.fnc.input)
+
         output = p.go(context.get_user_config_value('pipeline'), self.fnc)
         if isinstance(output[context.get_user_config_value('pipeline')], tuple) and isinstance(output[context.get_user_config_value('pipeline')][0], Exception):
             raise Exception(f"An exception occurred in the pipeline: {output[context.get_user_config_value('pipeline')][0]} {output[context.get_user_config_value('pipeline')][1]}")
@@ -73,8 +77,9 @@ class Wrapper(Function):
 
             count = context.get_counter(artifact.get_name_id())
 
+            #if count > 0 and count % self.fnc.save_model_after_this_many_events == 0:
             if count > 0 and count % 1000 == 0:
-                #self.fnc.sync_models(context)
+                #storage.put('model', self.fnc.model)
                 if artifact.get_pipeline_id() is not None:
                     artifact.save(checkpoint=True)
 
