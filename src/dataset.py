@@ -28,7 +28,7 @@ def start(args):
                     sys.path.append(path)
                     project_config = __import__('config')
 
-                    ignore_requirements = ['pandiocli', 'pulsar-client']
+                    ignore_requirements = ['pulsar-client']
                     pandioml_requirements = list(filter(lambda package: package.split("=")[0] not in
                                                                         ignore_requirements and package[0] != '#',
                                                         pandioml.requirements()))

@@ -111,7 +111,17 @@ def start(args):
 
     print("Starting execution of pipeline(s).")
 
-    client = docker.from_env()
+    print("")
+
+    try:
+        client = docker.from_env()
+    except Exception as e:
+        print("There was an error connecting to Docker. Is it installed and started?")
+        print("")
+        print("Get Docker for free at: https://www.docker.com")
+        print("")
+        exit()
+
     path = os.path.join(os.getcwd(), args.project_folder)
     if os.path.exists(os.path.join(os.getcwd(), args.dataset_name, 'dataset.py')):
         dpath = os.path.join(os.getcwd(), args.dataset_name)
@@ -134,6 +144,32 @@ def start(args):
                           detach=True)
 
     api = docker.APIClient()
+
+    # Install pip requirements for the project
+    if os.path.exists(os.path.join(os.getcwd(), args.project_folder, 'requirements.txt')):
+        f = open(os.path.join(os.getcwd(), args.project_folder, 'requirements.txt'), "r")
+        _reqs = f.read().splitlines()
+
+        if len(_reqs) > 0:
+            print("Installing project requirements.")
+            c = api.exec_create('pip_project', f"pip install {' '.join(_reqs)}",
+                                tty=True)
+            s = api.exec_start(c, stream=True)
+            for line in s:
+                print(line.decode('UTF-8'))
+
+    if dpath is not None and os.path.exists(os.path.join(os.getcwd(), args.dataset_name, 'requirements.txt')):
+        f = open(os.path.join(os.getcwd(), args.dataset_name, 'requirements.txt'), "r")
+        _reqs = f.read().splitlines()
+
+        if len(_reqs) > 0:
+            print("Installing dataset requirements.")
+            c = api.exec_create('pip_dataset', f"pip install {' '.join(_reqs)}",
+                                tty=True)
+            s = api.exec_start(c, stream=True)
+            for line in s:
+                print(line.decode('UTF-8'))
+
     c = api.exec_create('pandiocli', f"python /code/runner.py --dataset_name {dataset_name} --loops {loops} "
                                      f"--pipeline_name {pipeline_name} --pipeline_id {artifact.get_pipeline_id()}", tty=True)
     s = api.exec_start(c, stream=True)

@@ -31,7 +31,7 @@ def start(args):
                     fnc = __import__('function')
                     pipeline_key = fnc.Function().pipelines().get_keys()[0]
 
-                    ignore_requirements = ['pandiocli', 'pulsar-client']
+                    ignore_requirements = ['pulsar-client']
                     pandioml_requirements = list(filter(lambda package: package.split("=")[0] not in
                                                                         ignore_requirements and package[0] != '#',
                                                         pandioml.requirements()))
