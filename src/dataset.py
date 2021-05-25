@@ -1,4 +1,5 @@
 import logging, os, zipfile, hashlib, sys
+import pandioml
 from .configuration import Conf
 import json
 from shutil import copyfile, rmtree
@@ -27,22 +28,29 @@ def start(args):
                     sys.path.append(path)
                     project_config = __import__('config')
 
-                    copyfile(os.path.join(dirname, 'assets/pandioml-1.0.5-py3-none-any.whl'),
-                             os.path.join(path, 'deps/pandioml-1.0.5-py3-none-any.whl'))
+                    ignore_requirements = ['pandiocli', 'pulsar-client']
+                    pandioml_requirements = list(filter(lambda package: package.split("=")[0] not in
+                                                                        ignore_requirements and package[0] != '#',
+                                                        pandioml.requirements()))
 
                     if 'ADMIN_API' in project_config.pandio and 'localhost' in project_config.pandio['ADMIN_API']:
+                        os.system(f"pip download --only-binary :all: --no-deps -d {path}/deps pandioml")
+
                         os.system(f"pip download \
                                     --only-binary :all: \
-                                    -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+                                    -d {path}/deps {' '.join(pandioml_requirements)}")
 
                         os.system(f"pip download \
                                     --only-binary :all: \
                                     -r {path}/requirements.txt -d {path}/deps")
                     else:
+                        os.system(f"pip download --only-binary :all: --platform manylinux1_x86_64 --python-version 37 "
+                                  f"--no-deps -d {path}/deps pandioml")
+
                         os.system(f"pip download \
                                     --only-binary :all: \
                                     --platform manylinux1_x86_64 \
-                                    --python-version 37 -r {dirname}/assets/pandioml_requirements.txt -d {path}/deps")
+                                    --python-version 37 -d {path}/deps {' '.join(pandioml_requirements)}")
 
                         os.system(f"pip download \
                                     --only-binary :all: \
