@@ -71,6 +71,9 @@ def start(args):
                     zipf.close()
                     print(f"File located at {tmp_path}{tmp_file}")
 
+                    if os.path.exists(f"{path}/deps"):
+                        rmtree(f"{path}/deps")
+
                     arr = {
                         "name": project_config.pandio['FUNCTION_NAME'],
                         "userConfig": {
