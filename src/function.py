@@ -30,16 +30,11 @@ def start(args):
                     fnc = __import__('function')
                     pipeline_key = fnc.Function().pipelines().get_keys()[0]
 
-                    if 'ADMIN_API' in project_config.pandio and 'localhost' in project_config.pandio['ADMIN_API']:
-                        os.system(f"pip download --only-binary :all: -d {path}/deps pandioml>=1.0.6")
+                    print("Getting project requirements...")
 
-                        os.system(f"pip download --only-binary :all: -r {path}/requirements.txt -d {path}/deps")
-                    else:
-                        os.system(f"pip download --only-binary :all: --platform manylinux1_x86_64 --python-version 37 "
-                                  f"-d {path}/deps pandioml>=1.0.6")
-
-                        os.system(f"pip download --only-binary :all: --platform manylinux1_x86_64 "
-                                  f"--python-version 37 -r {path}/requirements.txt -d {path}/deps")
+                    f = open(f"{path}/pandio_requirements.txt", "w")
+                    f.write("pandioml>=1.0.6")
+                    f.close()
 
                     hash = hashlib.md5(bytes(args.project_folder, 'utf-8'))
                     tmp_path = tmp_path + hash.hexdigest() + '/'

@@ -6,7 +6,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="pandiocli",
-    version="1.0.11",
+    version="1.0.10",
     author="Joshua Odmark",
     author_email="josh@pandio.com",
     description="CLI to control Pandio's machine learning service.",
@@ -27,9 +27,8 @@ setuptools.setup(
             'pandiocli = src.__main__:main'
         ]
     },
-    install_requires=['goodconf==1.0.0', 'requests==2.25.1', 'pandioml==1.0.6',
-                      'pyinstaller @ https://github.com/pandio-com/pandiocli/raw/main/pyinstaller-4.3-py3-none-any.whl',
-                      'Faker==8.1.1', 'appdirs==1.4.4', 'requests-toolbelt==0.9.1', 'docker==5.0.0'],
+    install_requires=['goodconf==1.0.0', 'requests==2.25.1', 'pandioml==1.0.6', 'pyinstaller==4.3', 'Faker==8.1.1',
+                      'appdirs==1.4.4', 'requests-toolbelt==0.9.1', 'docker==5.0.0'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest==4.4.1'],
     test_suite='tests'
