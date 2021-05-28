@@ -40,7 +40,7 @@ class Function(FunctionBase):
         return Output(prediction=result['prediction'])
 
     def pipelines(self, *args, **kwargs):
-        return Pipelines().add(
+        return Pipelines(*args, **kwargs).add(
             'inference',
             Pipeline(*args, **kwargs)
                 .then(self.feature_extraction)

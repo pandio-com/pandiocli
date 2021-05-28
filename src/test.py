@@ -7,6 +7,7 @@ import zipfile
 from appdirs import user_config_dir
 import docker
 from shutil import copyfile
+import multiprocessing
 dirname = os.path.dirname(os.path.realpath(__file__))
 
 config = Conf()
@@ -152,7 +153,7 @@ def start(args):
 
         if len(_reqs) > 0:
             print("Installing project requirements.")
-            c = api.exec_create('pip_project', f"pip install {' '.join(_reqs)}",
+            c = api.exec_create('pandiocli', f"pip install {' '.join(_reqs)}",
                                 tty=True)
             s = api.exec_start(c, stream=True)
             for line in s:
@@ -164,17 +165,51 @@ def start(args):
 
         if len(_reqs) > 0:
             print("Installing dataset requirements.")
-            c = api.exec_create('pip_dataset', f"pip install {' '.join(_reqs)}",
+            c = api.exec_create('pandiocli', f"pip install {' '.join(_reqs)}",
                                 tty=True)
             s = api.exec_start(c, stream=True)
             for line in s:
                 print(line.decode('UTF-8'))
 
-    c = api.exec_create('pandiocli', f"python /code/runner.py --dataset_name {dataset_name} --loops {loops} "
-                                     f"--pipeline_name {pipeline_name} --pipeline_id {artifact.get_pipeline_id()}", tty=True)
-    s = api.exec_start(c, stream=True)
-    for line in s:
-        print(line.decode('UTF-8'))
+    if pipeline_name is None:
+        pm = __import__('function')
+        f = pm.Function()
+        p = f.pipelines(keys_only=True)
+        _pipeline_id = artifact.get_pipeline_id()
+        # TODO, chunk based on resources allocated to Docker
+        for _chunk in chunks(p.get_keys(), 5):
+            print(f"Running these pipelines: {_chunk}")
+            processes = {}
+            pid = 1
+            for _pipeline in _chunk:
+                # Set a new pipeline ID for each run to avoid collision
+                artifact.set_pipeline_id(_pipeline + '_' + _pipeline_id)
+                processes[pid] = multiprocessing.Process(target=worker,
+                                                         args=(f"python /code/runner.py --dataset_name {dataset_name} "
+                                                               f"--loops {loops} --pipeline_name {_pipeline} "
+                                                               f"--pipeline_id {artifact.get_pipeline_id()}",))
+                pid += 1
+            for item in processes.items():
+                item[1].start()
+            for item in processes.items():
+                item[1].join()
+            for item in processes.items():
+                if item[1].is_alive():
+                    print(
+                        "The pipeline should have finished by now. You may have to kill this terminal window manually.")
+    else:
+        # creating processes
+        p = multiprocessing.Process(target=worker, args=(f"python /code/runner.py --dataset_name {dataset_name} "
+                                                         f"--loops {loops} --pipeline_name {pipeline_name} "
+                                                         f"--pipeline_id {artifact.get_pipeline_id()}",))
+
+        # starting processes
+        p.start()
+        p.join()
+        if not p.is_alive():
+            print("Pipeline has finished.")
+        else:
+            print("The pipeline should have finished by now. You may have to kill this terminal window manually.")
 
     os.remove(os.path.join(path, 'runner.py'))
     os.remove(os.path.join(path, 'wrapper.py'))
@@ -185,3 +220,16 @@ def start(args):
     artifact.save()
 
     print("")
+
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def worker(command):
+    api = docker.APIClient()
+    c = api.exec_create('pandiocli', command, tty=True)
+    s = api.exec_start(c, stream=True)
+    for line in s:
+        print(line.decode('UTF-8'))

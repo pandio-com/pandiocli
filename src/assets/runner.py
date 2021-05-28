@@ -7,6 +7,7 @@ import wrapper as wr
 import os, sys
 from goodconf import GoodConf
 from appdirs import user_config_dir
+import time
 
 config = GoodConf()
 if os.path.exists(user_config_dir('PandioCLI', 'Pandio')+'/config.json'):
@@ -17,7 +18,6 @@ tracemalloc.start(10)
 
 
 def run(dataset_name, loops, pipeline_name=None):
-    import time
     try:
         if os.path.exists(dataset_name+'/dataset.py'):
             sys.path.insert(1, os.path.join(os.getcwd(), dataset_name))
@@ -90,3 +90,5 @@ if __name__ == "__main__":
     top_stats = snapshot.statistics('lineno')[:10]
     for stat in top_stats:
         print(stat)
+
+    print(f"End Timestamp: {time.time()}")
