@@ -3,7 +3,8 @@ from pandioml.core import Pipeline, Pipelines
 from pandioml.core.artifacts import artifact
 from pandioml.model import LogisticRegression
 from pandioml.model import StandardScaler
-from pandioml.data.record import Record, Null, Boolean, Integer, Long, Float, Double, Bytes, String, Array, Map
+from pandioml.data.record import Record, Null, Boolean, Integer, Long, Float, Double, Bytes, String, Array, Map, \
+    JsonSchema
 from pandioml.metrics import Accuracy
 from pandioml.model import ModelUtility
 

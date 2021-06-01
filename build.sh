@@ -4,4 +4,4 @@ pip uninstall pandiocli -y
 
 python setup.py bdist_wheel
 
-pip install dist/pandiocli-1.0.11-py3-none-any.whl
+pip install dist/pandiocli-1.0.13-py3-none-any.whl

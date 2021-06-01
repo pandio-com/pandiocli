@@ -1,9 +1,8 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from pandioml.function import Function
 from pandioml.core import Pipelines
-import function as pm
+import fnc as pm
 import config
 from pandioml.core.artifacts import artifact
 import time
@@ -12,7 +11,7 @@ from pandioml.data.record import JsonSchema
 artifact.set_storage_location(config.pandio['ARTIFACT_STORAGE'])
 
 
-class Wrapper(Function):
+class Wrapper:
     fnc = None
     result = None
     input_schema = None
@@ -22,6 +21,7 @@ class Wrapper(Function):
         self.pipeline_name = pipeline_name
         artifact.add('runtime_settings', {'config.pandio': config.pandio, 'sys.version': sys.version,
                                           'timestamp': time.strftime("%Y%m%d-%H%M%S")})
+
         if dataset_name is not None:
             try:
                 if os.path.exists(dataset_name + '/dataset.py'):
@@ -33,9 +33,15 @@ class Wrapper(Function):
                                                 dataset_name).schema()
             except Exception as e:
                 raise Exception(f"Could not find the dataset specified at ({dataset_name}): {e}")
+        else:
+            if hasattr(pm.Function, 'input_schema'):
+                self.input_schema = pm.Function.input_schema
 
     def process(self, input, context):
-        self.fnc = pm.Function(self.input_schema.decode(input), context, config)
+        if hasattr(pm.Function, 'input_schema') and hasattr(pm.Function.input_schema, 'decode'):
+            self.fnc = pm.Function(self.input_schema.decode(input), context, config)
+        else:
+            self.fnc = pm.Function(input, context, config)
         try:
             self.fnc.startup()
         except Exception as e:
@@ -50,13 +56,14 @@ class Wrapper(Function):
             raise Exception(f"Method pipelines should return a Pipelines object!")
 
         if self.pipeline_name is None:
-            context.set_user_config_value('pipeline', p.get_keys()[0])
-        else:
-            context.set_user_config_value('pipeline', self.pipeline_name)
+            if context.get_user_config_value('pipeline') is not None:
+                self.pipeline_name = context.get_user_config_value('pipeline')
+            else:
+                self.pipeline_name = p.get_keys()[0]
 
-        output = p.go(context.get_user_config_value('pipeline'), self.fnc)
-        if isinstance(output[context.get_user_config_value('pipeline')], tuple) and isinstance(output[context.get_user_config_value('pipeline')][0], Exception):
-            raise Exception(f"An exception occurred in the pipeline: {output[context.get_user_config_value('pipeline')][0]} {output[context.get_user_config_value('pipeline')][1]}")
+        output = p.go(self.pipeline_name, self.fnc)
+        if isinstance(output[self.pipeline_name], tuple) and isinstance(output[self.pipeline_name][0], Exception):
+            raise Exception(f"An exception occurred in the pipeline: {output[self.pipeline_name][0]} {output[self.pipeline_name][1]}")
             # TODO, see if this should be a print and continue, or halt the entire execution
 
         self.result = self.fnc.get_result()
@@ -64,7 +71,7 @@ class Wrapper(Function):
         if 'OUTPUT_TOPICS' in config.pandio:
             for output_topic in config.pandio['OUTPUT_TOPICS']:
                 if output is not None:
-                    context.publish(output_topic, JsonSchema(getattr(pm, output[context.get_user_config_value('pipeline')].schema()['name'])).encode(output[context.get_user_config_value('pipeline')]).decode('UTF-8'))
+                    context.publish(output_topic, JsonSchema(getattr(pm, output[self.pipeline_name].schema()['name'])).encode(output[self.pipeline_name]).decode('UTF-8'))
                 else:
                     print("Warning, output variable is empty, should be defined in self.fnc.done method.")
 

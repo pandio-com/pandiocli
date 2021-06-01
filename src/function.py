@@ -1,7 +1,7 @@
 import logging, os, zipfile, hashlib, sys
 from .configuration import Conf
 import json
-from shutil import copyfile
+from shutil import copyfile, rmtree
 import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from appdirs import user_config_dir
@@ -49,6 +49,9 @@ def start(args):
 
                     if os.path.exists(f"{path}/deps"):
                         rmtree(f"{path}/deps")
+
+                    if os.path.exists(f"{path}/pandio_requirements.txt"):
+                        os.remove(f"{path}/pandio_requirements.txt")
 
                     arr = {
                         "name": project_config.pandio['FUNCTION_NAME'],
@@ -149,4 +152,7 @@ def zipdir(path, ziph, project_folder):
                     if rel_dir == 'deps':
                         rel_dir = f"{project_folder}/deps"
                     rel_file = os.path.join(rel_dir, file)
-                    ziph.write(os.path.join(root, file), rel_file)
+                    if file == 'function.py':
+                        ziph.write(os.path.join(root, file), rel_file.replace('function.py', 'fnc.py'))
+                    else:
+                        ziph.write(os.path.join(root, file), rel_file)
