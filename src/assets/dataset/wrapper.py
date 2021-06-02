@@ -1,12 +1,11 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from pandioml.function import Function
 import dataset as _dataset
 import config
 
 
-class Wrapper(Function):
+class Wrapper:
     _dataset = None
 
     def __init__(self):

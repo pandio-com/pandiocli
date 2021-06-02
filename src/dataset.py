@@ -52,7 +52,7 @@ def start(args):
 
                     arr = {
                         "name": project_config.pandio['FUNCTION_NAME'],
-                        "inputs": project_config.pandio['INPUT_TOPICS'],
+                        "inputs": ['non-persistent://public/default/pandioml'],
                         "parallelism": 1,
                         "log-topic": project_config.pandio['LOG_TOPIC'],
                         "className": 'wrapper.Wrapper',
