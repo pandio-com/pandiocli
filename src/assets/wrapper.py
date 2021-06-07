@@ -2,7 +2,10 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from pandioml.core import Pipelines
-import fnc as pm
+try:
+    import fnc as pm
+except:
+    import function as pm
 import config
 from pandioml.core.artifacts import artifact
 import time

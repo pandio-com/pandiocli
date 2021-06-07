@@ -183,7 +183,8 @@ def start(args):
             pid = 1
             for _pipeline in _chunk:
                 # Set a new pipeline ID for each run to avoid collision
-                artifact.set_pipeline_id(_pipeline + '_' + _pipeline_id)
+                if _pipeline_id is not None:
+                    artifact.set_pipeline_id(_pipeline + '_' + _pipeline_id)
                 processes[pid] = multiprocessing.Process(target=worker,
                                                          args=(f"python /code/runner.py --dataset_name {dataset_name} "
                                                                f"--loops {loops} --pipeline_name {_pipeline} "
