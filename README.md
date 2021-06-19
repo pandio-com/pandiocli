@@ -6,7 +6,7 @@ This repository contains the PandioCLI tool to develop and deploy machine learni
 
 ## Quick Links
 
-#### [Pandio.com/PandioML](https://pandio.com/pandioml) - [Pandio.com](https://pandio.com) - [Getting Started](./guides/GETTING-STARTED.md) - [Quick Start](./guides/QUICK-START.md) - [PyPi PandioML](https://pypi.org/project/pandioml/) - [PyPi PandioCLI](https://pypi.org/project/pandiocli/)
+#### [Pandio.com/PandioML](https://pandio.com/pandioml) - [Pandio.com](https://pandio.com) - [Getting Started](https://github.com/pandio-com/pandioml/blob/main/guides/GETTING-STARTED.md) - [Quick Start](https://github.com/pandio-com/pandioml/blob/main/guides/QUICK-START.md) - [PyPi PandioML](https://pypi.org/project/pandioml/) - [PyPi PandioCLI](https://pypi.org/project/pandiocli/)
 
 ### Installation
 
@@ -170,11 +170,11 @@ All contributions are welcome.
 
 The best ways to get involved are as follows:
 
-1. [Issues](./issues)
+1. Issues
 
     This is a great place to report any problems found with PandioCLI. Bugs, inconsistencies, missing documentation, or anything that acted as an obstacle to using PandioCLI.
     
-1. [Discussions](./discussions)
+1. Discussions
 
     This is a great place for anything related to PandioCLI. Propose features, ask questions, highlight use cases, or anything else you can imagine.
     
